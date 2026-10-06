@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Podcast Library</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #14161c; color: #e8eaf0; line-height: 1.6; padding: 24px 16px 64px; }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 36px; }
+  header h1 { font-size: 2rem; margin-bottom: 8px; }
+  header p { color: #9aa0b4; }
+  .episode { background: #1e2230; border: 1px solid #2c3145; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .episode h2 { font-size: 1.2rem; margin-bottom: 4px; }
+  .episode .meta { color: #9aa0b4; font-size: 0.85rem; margin-bottom: 10px; }
+  .episode p.desc { margin-bottom: 12px; color: #c9cede; }
+  .episode audio { width: 100%; }
+  .empty { text-align: center; color: #9aa0b4; padding: 48px 16px; border: 1px dashed #2c3145; border-radius: 12px; }
+  footer { text-align: center; color: #6b7186; font-size: 0.8rem; margin-top: 48px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Podcast Library</h1>
+    <p>Selected episodes, ready to play.</p>
+  </header>
+  <div id="episodes"></div>
+  <footer>Built and shipped by NJShell2 on GitHub Pages.</footer>
+</div>
+<script>
+// To add an episode: drop the MP3 into the "episodes" folder in the repo,
+// then add an entry here with its title, date, duration, description, and file.
+const EPISODES = [
+  // Example:
+  // { title: "Episode title", date: "2026-10-06", duration: "9:42",
+  //   desc: "What the episode is about.", file: "episodes/episode-title.mp3" },
+];
+
+const box = document.getElementById("episodes");
+if (EPISODES.length === 0) {
+  box.innerHTML = '<div class="empty">New episodes are on the way. Check back soon.</div>';
+} else {
+  EPISODES.forEach(function (ep) {
+    const el = document.createElement("div");
+    el.className = "episode";
+    el.innerHTML =
+      "<h2></h2>" +
+      '<div class="meta"></div>' +
+      '<p class="desc"></p>' +
+      "<audio controls preload=\"none\"></audio>";
+    el.querySelector("h2").textContent = ep.title;
+    el.querySelector(".meta").textContent = ep.date + "  |  " + ep.duration;
+    el.querySelector(".desc").textContent = ep.desc;
+    el.querySelector("audio").src = ep.file;
+    box.appendChild(el);
+  });
+}
+</script>
+</body>
+</html>
