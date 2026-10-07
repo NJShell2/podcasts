@@ -11,12 +11,14 @@
   header { text-align: center; margin-bottom: 36px; }
   header h1 { font-size: 2rem; margin-bottom: 8px; }
   header p { color: #9aa0b4; }
+  .cat { margin-bottom: 40px; }
+  .cat > h2 { font-size: 1.4rem; margin-bottom: 2px; }
+  .cat > p.blurb { color: #9aa0b4; font-size: 0.9rem; margin-bottom: 16px; }
   .episode { background: #1e2230; border: 1px solid #2c3145; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
-  .episode h2 { font-size: 1.2rem; margin-bottom: 4px; }
+  .episode h3 { font-size: 1.15rem; margin-bottom: 4px; }
   .episode .meta { color: #9aa0b4; font-size: 0.85rem; margin-bottom: 10px; }
   .episode p.desc { margin-bottom: 12px; color: #c9cede; }
   .episode audio { width: 100%; }
-  .empty { text-align: center; color: #9aa0b4; padding: 48px 16px; border: 1px dashed #2c3145; border-radius: 12px; }
   footer { text-align: center; color: #6b7186; font-size: 0.8rem; margin-top: 48px; }
 </style>
 </head>
@@ -24,66 +26,89 @@
 <div class="wrap">
   <header>
     <h1>Podcast Library</h1>
-    <p>Selected episodes, ready to play.</p>
+    <p>The full collection, ready to play.</p>
   </header>
-  <div id="episodes"></div>
+  <div id="cats"></div>
   <footer>Built and shipped by NJShell2 on GitHub Pages.</footer>
 </div>
 <script>
 // To add an episode: drop the MP3 into the "episodes" folder in the repo,
-// then add an entry here with its title, date, duration, description, and file.
-const EPISODES = [
-  {"title": "Work-Life Balance: A Practice, Not a Perfect Split", "date": "2026-10-06", "duration": "10:21", "desc": "Nora on what work-life balance really means: knowing your season, boundaries that hold, presence, saying no, recovery, and the long view.", "file": "episodes/work-life-balance-a-practice-not-a-perfect-split-2026-10-06.mp3"},
-  {"title": "Using AI to Maximum Benefit", "date": "2026-10-06", "duration": "9:04", "desc": "Nora shares practical, honest ways for experienced AI users to get far more from a personal AI assistant: delegating whole outcomes, asking well, building systems that run while you are away, and staying sharp where it counts.", "file": "episodes/using-ai-to-maximum-benefit-2026-10-06.mp3"},
-  {"title": "The Path Out of Debt and Toward Financial Independence", "date": "2026-10-06", "duration": "10:46", "desc": "Nora walks through a practical, repeatable plan: face every debt honestly, pick an avalanche or snowball payoff strategy, budget by paying yourself first, build an emergency fund, cut the big three expenses, grow income, then invest steadily toward financial independence.", "file": "episodes/the-path-out-of-debt-and-toward-financial-independence-2026-10-06.mp3"},
-  {"title": "Studying Your Work", "date": "2026-10-06", "duration": "10:12", "desc": "Nora applies Jim Rohn's study frame to your craft: work harder on yourself than on your job, master your trade deliberately, build reputation as compound interest, learn in public, and sharpen one skill per quarter. Built for repeated listening.", "file": "episodes/studying-your-work-2026-10-06.mp3"},
-  {"title": "Studying Relationships", "date": "2026-10-06", "duration": "12:57", "desc": "Nora applies Jim Rohn's idea to love: study what makes relationships thrive, and practice it deliberately. Built for repeated listening.", "file": "episodes/studying-relationships-2026-10-06.mp3"},
-  {"title": "Studying Peace: The Capstone of the Good Life", "date": "2026-10-06", "duration": "11:18", "desc": "Nora closes the good-life series by studying peace of mind: what steals it, what calm people do, contentment as a skill, and stillness practices worth keeping.", "file": "episodes/studying-peace-the-capstone-of-the-good-life-2026-10-06.mp3"},
-  {"title": "Study the Good Life: Health", "date": "2026-10-06", "duration": "10:23", "desc": "Nora applies Jim Rohn's study frame to health: the big levers of sleep, movement, and food, energy management, consistency over intensity, and decades of small deposits.", "file": "episodes/study-the-good-life-health-2026-10-06.mp3"},
-  {"title": "Study Wealth", "date": "2026-10-06", "duration": "9:51", "desc": "Nora applies Jim Rohn's study frame to wealth: the philosophy first, the mechanics worth learning, the traps to avoid, and three first moves. Educational, not financial advice. Built for repeated listening.", "file": "episodes/study-wealth-2026-10-06.mp3"},
-  {"title": "Study Time", "date": "2026-10-06", "duration": "9:49", "desc": "Nora applies Jim Rohn's study frame to time: the one resource you cannot earn back. The honest weekly audit, what research says about time and happiness, protecting what matters, learning from people who use time well, and the weekly review habit. Built for repeated listening.", "file": "episodes/study-time-2026-10-06.mp3"},
-  {"title": "Study Success: Learning the Patterns That Produce It", "date": "2026-10-06", "duration": "9:50", "desc": "Nora on studying success like a subject: Jim Rohn's discipline, what successful people actually study, the fundamentals, learning from failure, environment and association, the long game, and how to study one successful person in your field.", "file": "episodes/study-success-learning-the-patterns-that-produce-it-2026-10-06.mp3"},
-  {"title": "Study Happiness", "date": "2026-10-06", "duration": "9:31", "desc": "Nora on what it means to study happiness the way you would study any subject: the Jim Rohn line, what the research says actually moves happiness, the hedonic treadmill, four daily practices, what happy people do differently, and a thirty-day study plan. Built for repeated listening.", "file": "episodes/study-happiness-2026-10-06.mp3"},
-  {"title": "Study Generosity", "date": "2026-10-06", "duration": "11:27", "desc": "Nora on studying generosity the Jim Rohn way: what giving does to the giver, the five currencies of giving, and starting where you are.", "file": "episodes/study-generosity-2026-10-06.mp3"},
-  {"title": "Study Friendship", "date": "2026-10-06", "duration": "9:46", "desc": "Nora applies Jim Rohn's study frame to friendship: choosing well, being the friend you want, depth over breadth, and maintaining it as an adult. Built for repeated listening.", "file": "episodes/study-friendship-2026-10-06.mp3"},
-  {"title": "Study Family", "date": "2026-10-06", "duration": "10:09", "desc": "Nora explores Jim Rohn's idea of studying the good life applied to family: what strong families do, presence over presents, building family culture on purpose, and studying your own family.", "file": "episodes/study-family-2026-10-06.mp3"},
-  {"title": "Study Faith", "date": "2026-10-06", "duration": "8:50", "desc": "Nora applies Jim Rohn's study frame to faith: scripture read with attention, prayer as daily practice, the role of community, service as the exam, and an honest weekly review of your own walk. Built for repeated listening.", "file": "episodes/study-faith-2026-10-06.mp3"},
-  {"title": "Study Character", "date": "2026-10-06", "duration": "9:26", "desc": "Nora applies Jim Rohn's study frame to character: who you are when nobody is watching, the building blocks of honesty and courage, the small unnoticed moments, learning from people of character, repairing mistakes quickly, and a nightly review. Built for repeated listening.", "file": "episodes/study-character-2026-10-06.mp3"},
-  {"title": "Steady Ground: Practical Strategies for Living with PTSD", "date": "2026-10-06", "duration": "13:07", "desc": "Nora walks through practical, everyday strategies for dealing with PTSD: understanding triggers, grounding techniques, daily steadiness habits, leaning on trusted people, finding professional help, and self-compassion. A warm, steady companion built for repeated listening on hard days.", "file": "episodes/steady-ground-practical-strategies-for-living-with-ptsd-2026-10-06.mp3"},
-  {"title": "Spanish 101: Your First Words - Cognates and Core Vocabulary", "date": "2026-10-06", "duration": "10:45", "desc": "Nora teaches the easiest Spanish words for an English speaker: cognates like animal and telefono, plus the 25 most common words in everyday Mexican Spanish, with call-and-response repetition built for daily listening.", "file": "episodes/spanish-101-your-first-words-cognates-and-core-vocabulary-2026-10-06.mp3"},
-  {"title": "Raising Teens Who Own Their Days", "date": "2026-10-06", "duration": "9:10", "desc": "Nora on raising teenagers who take responsibility for their daily lives and plan their own future: natural consequences, chores with real stakes, owning the school day, future thinking, money, communication, and modeling.", "file": "episodes/raising-teens-who-own-their-days-2026-10-06.mp3"},
-  {"title": "Practical Strategies for Managing ADHD", "date": "2026-10-06", "duration": "10:35", "desc": "Nora walks through practical, evidence-informed strategies for managing ADHD day to day: time management, starting tasks, focus and environment design, capture systems, and emotional regulation. Built as a reusable reference.", "file": "episodes/practical-strategies-for-managing-adhd-2026-10-06.mp3"},
-  {"title": "Navigating Daily Life as an Autistic Adult", "date": "2026-10-06", "duration": "9:00", "desc": "Nora shares practical strategies for autistic adults: communication, sensory life, routines, self-advocacy, and strengths.", "file": "episodes/navigating-daily-life-as-an-autistic-adult-2026-10-06.mp3"},
-  {"title": "Living Well with Dyslexia: Practical Strategies for Speaking and Reading", "date": "2026-10-06", "duration": "12:08", "desc": "Nora shares practical strategies for living well with dyslexia: reading tools like chunking and text-to-speech, speaking tricks for word retrieval, everyday aids, and self-advocacy. Built as a reusable reference.", "file": "episodes/living-well-with-dyslexia-practical-strategies-for-speaking-and-reading-2026-10-06.mp3"},
-  {"title": "Learn Anything Faster", "date": "2026-10-06", "duration": "10:19", "desc": "Nora walks through nine learning-science strategies for busy adult students: active recall, spaced repetition, interleaving, the Feynman technique, chunking, focused vs diffuse thinking, sleep, and deliberate practice.", "file": "episodes/learn-anything-faster-2026-10-06.mp3"},
-  {"title": "How to Be a Good Leader", "date": "2026-10-06", "duration": "9:16", "desc": "Nora shares nine practical leadership habits: influence over titles, clarity, listening, feedback, accountability, delegation, handling conflict, and leading by example in the small daily things.", "file": "episodes/how-to-be-a-good-leader-2026-10-06.mp3"},
-  {"title": "How to Be Decisive", "date": "2026-10-06", "duration": "9:45", "desc": "Nora breaks down practical decision-making: reversible versus irreversible choices, the seventy percent rule, decision deadlines, satisficing, and living with outcomes. A reusable reference for repeated listening.", "file": "episodes/how-to-be-decisive-2026-10-06.mp3"},
-  {"title": "Getting and Staying Organized: Systems for Home and Work", "date": "2026-10-06", "duration": "11:34", "desc": "Nora breaks organization into concrete systems: one inbox for capture, the weekly review, calendar vs task list, home routines, digital organization, work habits, and maintenance through small resets.", "file": "episodes/getting-and-staying-organized-systems-for-home-and-work-2026-10-06.mp3"},
-  {"title": "Daily Articulation Training with Nora", "date": "2026-10-06", "duration": "9:38", "desc": "A nine-minute daily articulation workout with your coach Nora: warm-ups, consonant drills, tongue twisters, and pacing work. Press play every day.", "file": "episodes/daily-articulation-training-with-nora-2026-10-06.mp3"},
-  {"title": "Beating Procrastination: Practical Strategies That Actually Work", "date": "2026-10-06", "duration": "10:01", "desc": "Nora breaks down why we really procrastinate and hands you practical, evidence-informed strategies for starting, planning, designing your environment, accountability, and self-compassion. Built for repeated listening.", "file": "episodes/beating-procrastination-practical-strategies-that-actually-work-2026-10-06.mp3"},
-  {"title": "Boiler Up: The Story of Purdue Basketball", "date": "2026-10-04", "duration": "11:23", "desc": "Marcus and Nora tell the story of Purdue men's basketball: 26 Big Ten titles, three Final Fours, no NCAA championship, and why the climb is the point. Made for Nicholas.", "file": "episodes/boiler-up-the-story-of-purdue-basketball-2026-10-04.mp3"},
-  {"title": "Blue Heaven: The Story of the Dodgers", "date": "2026-10-04", "duration": "10:51", "desc": "Marcus and Nora tell the 143-year saga of the Dodgers, from Brooklyn heartbreak to a three-peat chase, and the century-long war with the Yankees. Made for Javier.", "file": "episodes/blue-heaven-the-story-of-the-dodgers-2026-10-04.mp3"}
+// then add an entry under its category below.
+const CATS = [
+  { key: "goodlife", title: "Study the Good Life", blurb: "The Jim Rohn series: if you want it, study it.", episodes: [
+    {"title":"Studying Your Work","date":"2026-10-06","duration":"10:12","desc":"Nora applies Jim Rohn's study frame to your craft: work harder on yourself than on your job, master your trade deliberately, build reputation as compound interest, learn in public, and sharpen one skill per quarter. Built for repeated listening.","file":"episodes/studying-your-work-2026-10-06.mp3"},
+    {"title":"Studying Relationships","date":"2026-10-06","duration":"12:57","desc":"Nora applies Jim Rohn's idea to love: study what makes relationships thrive, and practice it deliberately. Built for repeated listening.","file":"episodes/studying-relationships-2026-10-06.mp3"},
+    {"title":"Studying Peace: The Capstone of the Good Life","date":"2026-10-06","duration":"11:18","desc":"Nora closes the good-life series by studying peace of mind: what steals it, what calm people do, contentment as a skill, and stillness practices worth keeping.","file":"episodes/studying-peace-the-capstone-of-the-good-life-2026-10-06.mp3"},
+    {"title":"Study the Good Life: Health","date":"2026-10-06","duration":"10:23","desc":"Nora applies Jim Rohn's study frame to health: the big levers of sleep, movement, and food, energy management, consistency over intensity, and decades of small deposits.","file":"episodes/study-the-good-life-health-2026-10-06.mp3"},
+    {"title":"Study Wealth","date":"2026-10-06","duration":"9:51","desc":"Nora applies Jim Rohn's study frame to wealth: the philosophy first, the mechanics worth learning, the traps to avoid, and three first moves. Educational, not financial advice. Built for repeated listening.","file":"episodes/study-wealth-2026-10-06.mp3"},
+    {"title":"Study Time","date":"2026-10-06","duration":"9:49","desc":"Nora applies Jim Rohn's study frame to time: the one resource you cannot earn back. The honest weekly audit, what research says about time and happiness, protecting what matters, learning from people who use time well, and the weekly review habit. Built for repeated listening.","file":"episodes/study-time-2026-10-06.mp3"},
+    {"title":"Study Success: Learning the Patterns That Produce It","date":"2026-10-06","duration":"9:50","desc":"Nora on studying success like a subject: Jim Rohn's discipline, what successful people actually study, the fundamentals, learning from failure, environment and association, the long game, and how to study one successful person in your field.","file":"episodes/study-success-learning-the-patterns-that-produce-it-2026-10-06.mp3"},
+    {"title":"Study Happiness","date":"2026-10-06","duration":"9:31","desc":"Nora on what it means to study happiness the way you would study any subject: the Jim Rohn line, what the research says actually moves happiness, the hedonic treadmill, four daily practices, what happy people do differently, and a thirty-day study plan. Built for repeated listening.","file":"episodes/study-happiness-2026-10-06.mp3"},
+    {"title":"Study Generosity","date":"2026-10-06","duration":"11:27","desc":"Nora on studying generosity the Jim Rohn way: what giving does to the giver, the five currencies of giving, and starting where you are.","file":"episodes/study-generosity-2026-10-06.mp3"},
+    {"title":"Study Friendship","date":"2026-10-06","duration":"9:46","desc":"Nora applies Jim Rohn's study frame to friendship: choosing well, being the friend you want, depth over breadth, and maintaining it as an adult. Built for repeated listening.","file":"episodes/study-friendship-2026-10-06.mp3"},
+    {"title":"Study Family","date":"2026-10-06","duration":"10:09","desc":"Nora explores Jim Rohn's idea of studying the good life applied to family: what strong families do, presence over presents, building family culture on purpose, and studying your own family.","file":"episodes/study-family-2026-10-06.mp3"},
+    {"title":"Study Faith","date":"2026-10-06","duration":"8:50","desc":"Nora applies Jim Rohn's study frame to faith: scripture read with attention, prayer as daily practice, the role of community, service as the exam, and an honest weekly review of your own walk. Built for repeated listening.","file":"episodes/study-faith-2026-10-06.mp3"},
+    {"title":"Study Character","date":"2026-10-06","duration":"9:26","desc":"Nora applies Jim Rohn's study frame to character: who you are when nobody is watching, the building blocks of honesty and courage, the small unnoticed moments, learning from people of character, repairing mistakes quickly, and a nightly review. Built for repeated listening.","file":"episodes/study-character-2026-10-06.mp3"}
+  ] },
+  { key: "strategy", title: "Strategy Sessions", blurb: "Practical coaching with Nora.", episodes: [
+    {"title":"Work-Life Balance: A Practice, Not a Perfect Split","date":"2026-10-06","duration":"10:21","desc":"Nora on what work-life balance really means: knowing your season, boundaries that hold, presence, saying no, recovery, and the long view.","file":"episodes/work-life-balance-a-practice-not-a-perfect-split-2026-10-06.mp3"},
+    {"title":"Using AI to Maximum Benefit","date":"2026-10-06","duration":"9:04","desc":"Nora shares practical, honest ways for experienced AI users to get far more from a personal AI assistant: delegating whole outcomes, asking well, building systems that run while you are away, and staying sharp where it counts.","file":"episodes/using-ai-to-maximum-benefit-2026-10-06.mp3"},
+    {"title":"The Path Out of Debt and Toward Financial Independence","date":"2026-10-06","duration":"10:46","desc":"Nora walks through a practical, repeatable plan: face every debt honestly, pick an avalanche or snowball payoff strategy, budget by paying yourself first, build an emergency fund, cut the big three expenses, grow income, then invest steadily toward financial independence.","file":"episodes/the-path-out-of-debt-and-toward-financial-independence-2026-10-06.mp3"},
+    {"title":"Steady Ground: Practical Strategies for Living with PTSD","date":"2026-10-06","duration":"13:07","desc":"Nora walks through practical, everyday strategies for dealing with PTSD: understanding triggers, grounding techniques, daily steadiness habits, leaning on trusted people, finding professional help, and self-compassion. A warm, steady companion built for repeated listening on hard days.","file":"episodes/steady-ground-practical-strategies-for-living-with-ptsd-2026-10-06.mp3"},
+    {"title":"Raising Teens Who Own Their Days","date":"2026-10-06","duration":"9:10","desc":"Nora on raising teenagers who take responsibility for their daily lives and plan their own future: natural consequences, chores with real stakes, owning the school day, future thinking, money, communication, and modeling.","file":"episodes/raising-teens-who-own-their-days-2026-10-06.mp3"},
+    {"title":"Practical Strategies for Managing ADHD","date":"2026-10-06","duration":"10:35","desc":"Nora walks through practical, evidence-informed strategies for managing ADHD day to day: time management, starting tasks, focus and environment design, capture systems, and emotional regulation. Built as a reusable reference.","file":"episodes/practical-strategies-for-managing-adhd-2026-10-06.mp3"},
+    {"title":"Navigating Daily Life as an Autistic Adult","date":"2026-10-06","duration":"9:00","desc":"Nora shares practical strategies for autistic adults: communication, sensory life, routines, self-advocacy, and strengths.","file":"episodes/navigating-daily-life-as-an-autistic-adult-2026-10-06.mp3"},
+    {"title":"How to Be a Good Leader","date":"2026-10-06","duration":"9:16","desc":"Nora shares nine practical leadership habits: influence over titles, clarity, listening, feedback, accountability, delegation, handling conflict, and leading by example in the small daily things.","file":"episodes/how-to-be-a-good-leader-2026-10-06.mp3"},
+    {"title":"How to Be Decisive","date":"2026-10-06","duration":"9:45","desc":"Nora breaks down practical decision-making: reversible versus irreversible choices, the seventy percent rule, decision deadlines, satisficing, and living with outcomes. A reusable reference for repeated listening.","file":"episodes/how-to-be-decisive-2026-10-06.mp3"},
+    {"title":"Getting and Staying Organized: Systems for Home and Work","date":"2026-10-06","duration":"11:34","desc":"Nora breaks organization into concrete systems: one inbox for capture, the weekly review, calendar vs task list, home routines, digital organization, work habits, and maintenance through small resets.","file":"episodes/getting-and-staying-organized-systems-for-home-and-work-2026-10-06.mp3"},
+    {"title":"Beating Procrastination: Practical Strategies That Actually Work","date":"2026-10-06","duration":"10:01","desc":"Nora breaks down why we really procrastinate and hands you practical, evidence-informed strategies for starting, planning, designing your environment, accountability, and self-compassion. Built for repeated listening.","file":"episodes/beating-procrastination-practical-strategies-that-actually-work-2026-10-06.mp3"}
+  ] },
+  { key: "learn", title: "Speak & Learn", blurb: "Training for your voice and your brain.", episodes: [
+    {"title":"Spanish 101: Your First Words - Cognates and Core Vocabulary","date":"2026-10-06","duration":"10:45","desc":"Nora teaches the easiest Spanish words for an English speaker: cognates like animal and telefono, plus the 25 most common words in everyday Mexican Spanish, with call-and-response repetition built for daily listening.","file":"episodes/spanish-101-your-first-words-cognates-and-core-vocabulary-2026-10-06.mp3"},
+    {"title":"Living Well with Dyslexia: Practical Strategies for Speaking and Reading","date":"2026-10-06","duration":"12:08","desc":"Nora shares practical strategies for living well with dyslexia: reading tools like chunking and text-to-speech, speaking tricks for word retrieval, everyday aids, and self-advocacy. Built as a reusable reference.","file":"episodes/living-well-with-dyslexia-practical-strategies-for-speaking-and-reading-2026-10-06.mp3"},
+    {"title":"Learn Anything Faster","date":"2026-10-06","duration":"10:19","desc":"Nora walks through nine learning-science strategies for busy adult students: active recall, spaced repetition, interleaving, the Feynman technique, chunking, focused vs diffuse thinking, sleep, and deliberate practice.","file":"episodes/learn-anything-faster-2026-10-06.mp3"},
+    {"title":"Daily Articulation Training with Nora","date":"2026-10-06","duration":"9:38","desc":"A nine-minute daily articulation workout with your coach Nora: warm-ups, consonant drills, tongue twisters, and pacing work. Press play every day.","file":"episodes/daily-articulation-training-with-nora-2026-10-06.mp3"}
+  ] },
+  { key: "stories", title: "Stories", blurb: "Deep dives, told by Marcus.", episodes: [
+    {"title":"Boiler Up: The Story of Purdue Basketball","date":"2026-10-04","duration":"11:23","desc":"Marcus and Nora tell the story of Purdue men's basketball: 26 Big Ten titles, three Final Fours, no NCAA championship, and why the climb is the point. Made for Nicholas.","file":"episodes/boiler-up-the-story-of-purdue-basketball-2026-10-04.mp3"},
+    {"title":"Blue Heaven: The Story of the Dodgers","date":"2026-10-04","duration":"10:51","desc":"Marcus and Nora tell the 143-year saga of the Dodgers, from Brooklyn heartbreak to a three-peat chase, and the century-long war with the Yankees. Made for Javier.","file":"episodes/blue-heaven-the-story-of-the-dodgers-2026-10-04.mp3"}
+  ] }
+];
 
-
-const box = document.getElementById("episodes");
-if (EPISODES.length === 0) {
-  box.innerHTML = '<div class="empty">New episodes are on the way. Check back soon.</div>';
-} else {
-  EPISODES.forEach(function (ep) {
-    const el = document.createElement("div");
+var box = document.getElementById("cats");
+CATS.forEach(function (cat) {
+  var sec = document.createElement("section");
+  sec.className = "cat";
+  var h = document.createElement("h2");
+  h.textContent = cat.title;
+  var b = document.createElement("p");
+  b.className = "blurb";
+  b.textContent = cat.blurb;
+  sec.appendChild(h);
+  sec.appendChild(b);
+  cat.episodes.forEach(function (ep) {
+    var el = document.createElement("div");
     el.className = "episode";
-    el.innerHTML =
-      "<h2></h2>" +
-      '<div class="meta"></div>' +
-      '<p class="desc"></p>' +
-      "<audio controls preload=\"none\"></audio>";
-    el.querySelector("h2").textContent = ep.title;
-    el.querySelector(".meta").textContent = ep.date + "  |  " + ep.duration;
-    el.querySelector(".desc").textContent = ep.desc;
-    el.querySelector("audio").src = ep.file;
-    box.appendChild(el);
+    var h3 = document.createElement("h3");
+    h3.textContent = ep.title;
+    var meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent = ep.date + "  |  " + ep.duration;
+    var desc = document.createElement("p");
+    desc.className = "desc";
+    desc.textContent = ep.desc;
+    var audio = document.createElement("audio");
+    audio.controls = true;
+    audio.preload = "none";
+    audio.src = ep.file;
+    el.appendChild(h3);
+    el.appendChild(meta);
+    el.appendChild(desc);
+    el.appendChild(audio);
+    sec.appendChild(el);
   });
-}
+  box.appendChild(sec);
+});
 </script>
 </body>
 </html>
