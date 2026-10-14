@@ -19,6 +19,9 @@
   .episode .meta { color: #9aa0b4; font-size: 0.85rem; margin-bottom: 10px; }
   .episode p.desc { margin-bottom: 12px; color: #c9cede; }
   .episode audio { width: 100%; }
+  .episode .share { margin-top: 10px; background: #2c3145; color: #c9cede; border: 1px solid #3a4060; border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; cursor: pointer; }
+  .episode .share:hover { background: #3a4060; }
+  .episode:target, .episode.flash { border-color: #7c8aff; box-shadow: 0 0 0 2px #7c8aff; }
   footer { text-align: center; color: #6b7186; font-size: 0.8rem; margin-top: 48px; }
 </style>
 </head>
@@ -89,8 +92,10 @@ CATS.forEach(function (cat) {
   sec.appendChild(h);
   sec.appendChild(b);
   cat.episodes.forEach(function (ep) {
+    var slug = ep.file.split("/").pop().replace(/\.mp3$/, "");
     var el = document.createElement("div");
     el.className = "episode";
+    el.id = "ep-" + slug;
     var h3 = document.createElement("h3");
     h3.textContent = ep.title;
     var meta = document.createElement("div");
@@ -101,16 +106,53 @@ CATS.forEach(function (cat) {
     desc.textContent = ep.desc;
     var audio = document.createElement("audio");
     audio.controls = true;
-    audio.preload = "none";
+    audio.preload = "metadata";
     audio.src = ep.file;
+    var share = document.createElement("button");
+    share.className = "share";
+    share.type = "button";
+    share.textContent = "Copy link to this episode";
+    share.addEventListener("click", function () {
+      var link = "https://njshell2.github.io/podcasts/#" + slug;
+      function done(ok) {
+        share.textContent = ok ? "Copied!" : "Copy failed";
+        setTimeout(function () { share.textContent = "Copy link to this episode"; }, 2000);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(function () { done(true); }, function () { done(false); });
+      } else {
+        var ta = document.createElement("textarea");
+        ta.value = link;
+        document.body.appendChild(ta);
+        ta.select();
+        try { done(document.execCommand("copy")); } catch (e) { done(false); }
+        document.body.removeChild(ta);
+      }
+    });
     el.appendChild(h3);
     el.appendChild(meta);
     el.appendChild(desc);
     el.appendChild(audio);
+    el.appendChild(share);
     sec.appendChild(el);
   });
   box.appendChild(sec);
 });
+
+// Deep-linking: #slug scrolls to the episode and flashes it.
+function revealFromHash() {
+  var m = /^#([A-Za-z0-9-]+)$/.exec(location.hash || "");
+  if (!m) return;
+  var target = document.getElementById("ep-" + m[1]);
+  if (!target) return;
+  target.scrollIntoView({ block: "center" });
+  target.classList.remove("flash");
+  void target.offsetWidth;
+  target.classList.add("flash");
+  setTimeout(function () { target.classList.remove("flash"); }, 2500);
+}
+window.addEventListener("hashchange", revealFromHash);
+revealFromHash();
 </script>
 </body>
 </html>
