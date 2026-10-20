@@ -21,6 +21,8 @@
   .episode audio { width: 100%; }
   .episode .share { margin-top: 10px; background: #2c3145; color: #c9cede; border: 1px solid #3a4060; border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; cursor: pointer; }
   .episode .share:hover { background: #3a4060; }
+  .episode .big-play { display: block; width: 100%; margin: 0 0 14px; background: #7c8aff; color: #fff; border: none; border-radius: 10px; padding: 14px 16px; font-size: 1.05rem; font-weight: 700; cursor: pointer; }
+  .episode .big-play:hover { background: #93a0ff; }
   .episode:target, .episode.flash { border-color: #7c8aff; box-shadow: 0 0 0 2px #7c8aff; }
   footer { text-align: center; color: #6b7186; font-size: 0.8rem; margin-top: 48px; }
 </style>
@@ -145,7 +147,9 @@ CATS.forEach(function (cat) {
   box.appendChild(sec);
 });
 
-// Deep-linking: #slug scrolls to the episode and flashes it.
+// Deep-linking: #slug scrolls to the episode, flashes it, and adds a
+// large one-tap play button (browsers block autoplay with sound, so this
+// is the closest equivalent: one tap starts playback as a user gesture).
 function revealFromHash() {
   var m = /^#([A-Za-z0-9-]+)$/.exec(location.hash || "");
   if (!m) return;
@@ -156,6 +160,19 @@ function revealFromHash() {
   void target.offsetWidth;
   target.classList.add("flash");
   setTimeout(function () { target.classList.remove("flash"); }, 2500);
+  var audio = target.querySelector("audio");
+  if (audio && !target.querySelector(".big-play")) {
+    var big = document.createElement("button");
+    big.className = "big-play";
+    big.type = "button";
+    big.textContent = "\u25B6 Play this episode";
+    big.addEventListener("click", function () {
+      var p = audio.play();
+      if (p && typeof p.catch === "function") { p.catch(function () {}); }
+    });
+    audio.addEventListener("play", function () { big.remove(); }, { once: true });
+    target.insertBefore(big, target.firstChild);
+  }
 }
 window.addEventListener("hashchange", revealFromHash);
 revealFromHash();
