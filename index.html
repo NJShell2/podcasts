@@ -23,6 +23,14 @@
   .episode .share:hover { background: #3a4060; }
   .episode .big-play { display: block; width: 100%; margin: 0 0 14px; background: #7c8aff; color: #fff; border: none; border-radius: 10px; padding: 14px 16px; font-size: 1.05rem; font-weight: 700; cursor: pointer; }
   .episode .big-play:hover { background: #93a0ff; }
+  .autoplay-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 14px; margin-bottom: 28px; }
+  .autoplay-bar label { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem; }
+  .autoplay-bar input[type="checkbox"] { width: 20px; height: 20px; accent-color: #7c8aff; cursor: pointer; }
+  .autoplay-bar .autoplay-note { color: #9aa0b4; font-size: 0.85rem; }
+  .autoplay-countdown { position: sticky; top: 8px; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #1e2230; border: 1px solid #7c8aff; border-radius: 10px; padding: 10px 14px; margin-bottom: 28px; font-size: 0.95rem; box-shadow: 0 4px 18px rgba(0,0,0,0.45); }
+  .autoplay-countdown[hidden] { display: none; }
+  .autoplay-countdown button { background: #2c3145; color: #c9cede; border: 1px solid #3a4060; border-radius: 8px; padding: 6px 12px; font-size: 0.85rem; cursor: pointer; flex-shrink: 0; }
+  .autoplay-countdown button:hover { background: #3a4060; }
   .episode:target, .episode.flash { border-color: #7c8aff; box-shadow: 0 0 0 2px #7c8aff; }
   footer { text-align: center; color: #6b7186; font-size: 0.8rem; margin-top: 48px; }
 </style>
@@ -33,6 +41,14 @@
     <h1>Podcast Library</h1>
     <p>The full collection, ready to play.</p>
   </header>
+  <div class="autoplay-bar">
+    <label><input type="checkbox" id="autoplayToggle"> Auto-play next episode</label>
+    <span class="autoplay-note">Off by default. When on, the next episode starts 10 seconds after one ends.</span>
+  </div>
+  <div id="autoplayCountdown" class="autoplay-countdown" hidden>
+    <span id="autoplayCountdownText"></span>
+    <button type="button" id="autoplayCancel">Cancel</button>
+  </div>
   <div id="cats"></div>
   <footer>Built and shipped by NJShell2 on GitHub Pages.</footer>
 </div>
@@ -244,6 +260,81 @@ function revealFromHash() {
 }
 window.addEventListener("hashchange", revealFromHash);
 revealFromHash();
+
+// Optional auto-play: OFF by default. When the visitor turns the toggle
+// on, a 10-second countdown with a Cancel button appears when an episode
+// ends, then the next episode down the page starts playing. The toggle
+// choice is remembered on this device only.
+(function () {
+  var toggle = document.getElementById("autoplayToggle");
+  var banner = document.getElementById("autoplayCountdown");
+  var text = document.getElementById("autoplayCountdownText");
+  var cancelBtn = document.getElementById("autoplayCancel");
+  if (!toggle || !banner || !text || !cancelBtn) return;
+  try { toggle.checked = localStorage.getItem("podcasts-autoplay") === "1"; } catch (e) {}
+  var audios = Array.prototype.slice.call(document.querySelectorAll(".episode audio"));
+  var timer = null;
+  var interval = null;
+  function cancelCountdown() {
+    if (timer) { clearTimeout(timer); timer = null; }
+    if (interval) { clearInterval(interval); interval = null; }
+    banner.hidden = true;
+  }
+  toggle.addEventListener("change", function () {
+    try { localStorage.setItem("podcasts-autoplay", toggle.checked ? "1" : "0"); } catch (e) {}
+    if (!toggle.checked) cancelCountdown();
+  });
+  cancelBtn.addEventListener("click", cancelCountdown);
+  audios.forEach(function (audio, i) {
+    // Starting anything by hand cancels a pending auto-play.
+    audio.addEventListener("play", cancelCountdown);
+    audio.addEventListener("ended", function () {
+      if (!toggle.checked) return;
+      var next = audios[i + 1];
+      if (!next) return;
+      var card = next.closest ? next.closest(".episode") : null;
+      var h3 = card ? card.querySelector("h3") : null;
+      var title = h3 ? h3.textContent : "the next episode";
+      var secs = 10;
+      function show() { text.textContent = "Next episode in " + secs + "s: " + title; }
+      banner.hidden = false;
+      show();
+      interval = setInterval(function () {
+        secs = secs - 1;
+        if (secs > 0) show();
+      }, 1000);
+      timer = setTimeout(function () {
+        cancelCountdown();
+        if (card) {
+          card.scrollIntoView({ block: "center" });
+          card.classList.remove("flash");
+          void card.offsetWidth;
+          card.classList.add("flash");
+          setTimeout(function () { card.classList.remove("flash"); }, 2500);
+        }
+        var p = next.play();
+        if (p && typeof p.catch === "function") {
+          p.catch(function () {
+            // Browser refused the automatic start: fall back to the
+            // one-tap play button on the next episode's card.
+            if (card && !card.querySelector(".big-play")) {
+              var big = document.createElement("button");
+              big.className = "big-play";
+              big.type = "button";
+              big.textContent = "\u25B6 Play next episode";
+              big.addEventListener("click", function () {
+                var q = next.play();
+                if (q && typeof q.catch === "function") { q.catch(function () {}); }
+              });
+              next.addEventListener("play", function () { big.remove(); }, { once: true });
+              card.insertBefore(big, card.firstChild);
+            }
+          });
+        }
+      }, 10000);
+    });
+  });
+})();
 </script>
 </body>
 </html>
