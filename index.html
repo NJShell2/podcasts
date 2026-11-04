@@ -11,8 +11,14 @@
   header { text-align: center; margin-bottom: 36px; }
   header h1 { font-size: 2rem; margin-bottom: 8px; }
   header p { color: #9aa0b4; }
-  .cat { margin-bottom: 40px; }
-  .cat > h2 { font-size: 1.4rem; margin-bottom: 2px; }
+  .cat { margin-bottom: 40px; scroll-margin-top: 110px; }
+  .cat > h2 { position: sticky; top: 47px; z-index: 15; background: #14161c; font-size: 1.4rem; padding: 8px 0 6px; margin-bottom: 2px; }
+  #sectionNav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 14px; background: #14161c; border-bottom: 1px solid #2c3145; padding: 9px 2px; margin-bottom: 28px; }
+  #sectionNav .nav-brand { font-weight: 700; font-size: 0.95rem; white-space: nowrap; }
+  #sectionNav .nav-links { display: flex; gap: 4px 14px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+  #sectionNav .nav-links::-webkit-scrollbar { display: none; }
+  #sectionNav a { color: #9aa0b4; text-decoration: none; font-size: 0.9rem; }
+  #sectionNav a:hover { color: #e8eaf0; text-decoration: underline; }
   .cat > p.blurb { color: #9aa0b4; font-size: 0.9rem; margin-bottom: 16px; }
   .episode { background: #1e2230; border: 1px solid #2c3145; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
   .episode h3 { font-size: 1.15rem; margin-bottom: 4px; }
@@ -27,7 +33,7 @@
   .autoplay-bar label { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem; }
   .autoplay-bar input[type="checkbox"] { width: 20px; height: 20px; accent-color: #7c8aff; cursor: pointer; }
   .autoplay-bar .autoplay-note { color: #9aa0b4; font-size: 0.85rem; }
-  .autoplay-countdown { position: sticky; top: 8px; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #1e2230; border: 1px solid #7c8aff; border-radius: 10px; padding: 10px 14px; margin-bottom: 28px; font-size: 0.95rem; box-shadow: 0 4px 18px rgba(0,0,0,0.45); }
+  .autoplay-countdown { position: sticky; top: 108px; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #1e2230; border: 1px solid #7c8aff; border-radius: 10px; padding: 10px 14px; margin-bottom: 28px; font-size: 0.95rem; box-shadow: 0 4px 18px rgba(0,0,0,0.45); }
   .autoplay-countdown[hidden] { display: none; }
   .autoplay-countdown button { background: #2c3145; color: #c9cede; border: 1px solid #3a4060; border-radius: 8px; padding: 6px 12px; font-size: 0.85rem; cursor: pointer; flex-shrink: 0; }
   .autoplay-countdown button:hover { background: #3a4060; }
@@ -49,6 +55,10 @@
     <span id="autoplayCountdownText"></span>
     <button type="button" id="autoplayCancel">Cancel</button>
   </div>
+  <nav id="sectionNav" aria-label="Podcast sections">
+    <span class="nav-brand">Podcast Library</span>
+    <span class="nav-links" id="navLinks"></span>
+  </nav>
   <div id="cats"></div>
   <footer>Built and shipped by NJShell2 on GitHub Pages.</footer>
 </div>
@@ -173,9 +183,24 @@ const CATS = [
 ];
 
 var box = document.getElementById("cats");
+// Each section gets a stable, shareable address: the page URL plus
+// "#" and this slug (for example #strategy-sessions). The nav links at
+// the top are ordinary links to those addresses, so a copied link lands
+// on the section in any browser.
+function sectionSlug(title) {
+  return title.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+var navLinks = document.getElementById("navLinks");
 CATS.forEach(function (cat) {
   var sec = document.createElement("section");
   sec.className = "cat";
+  sec.id = sectionSlug(cat.title);
+  if (navLinks) {
+    var navA = document.createElement("a");
+    navA.href = "#" + sec.id;
+    navA.textContent = cat.title;
+    navLinks.appendChild(navA);
+  }
   var h = document.createElement("h2");
   h.textContent = cat.title;
   var b = document.createElement("p");
@@ -238,7 +263,15 @@ function revealFromHash() {
   var m = /^#([A-Za-z0-9-]+)$/.exec(location.hash || "");
   if (!m) return;
   var target = document.getElementById("ep-" + m[1]);
-  if (!target) return;
+  if (!target) {
+    // Section link (for example #strategy-sessions): the sections are
+    // rendered by this script, so a pasted link needs this nudge to land
+    // on the section after the page builds. scroll-margin-top keeps the
+    // section header clear of the sticky nav.
+    var sec = document.getElementById(m[1]);
+    if (sec && sec.className === "cat") { sec.scrollIntoView({ block: "start" }); }
+    return;
+  }
   target.scrollIntoView({ block: "center" });
   target.classList.remove("flash");
   void target.offsetWidth;
