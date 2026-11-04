@@ -11,13 +11,12 @@
   header { text-align: center; margin-bottom: 36px; }
   header h1 { font-size: 2rem; margin-bottom: 8px; }
   header p { color: #9aa0b4; }
-  .cat { margin-bottom: 40px; scroll-margin-top: 110px; }
-  .cat > h2 { position: sticky; top: 47px; z-index: 15; background: #14161c; font-size: 1.4rem; padding: 8px 0 6px; margin-bottom: 2px; }
-  #sectionNav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 14px; background: #14161c; border-bottom: 1px solid #2c3145; padding: 9px 2px; margin-bottom: 28px; }
-  #sectionNav .nav-brand { font-weight: 700; font-size: 0.95rem; white-space: nowrap; }
-  #sectionNav .nav-links { display: flex; gap: 4px 14px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+  .cat { margin-bottom: 40px; scroll-margin-top: 46px; }
+  .cat > h2 { position: sticky; top: 44px; z-index: 15; background: #14161c; font-size: 1.4rem; padding: 8px 0 6px; margin-bottom: 2px; }
+  #sectionNav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; height: 44px; background: #14161c; border-bottom: 1px solid #2c3145; padding: 0 2px; margin-bottom: 28px; }
+  #sectionNav .nav-links { display: flex; gap: 4px 12px; flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
   #sectionNav .nav-links::-webkit-scrollbar { display: none; }
-  #sectionNav a { color: #9aa0b4; text-decoration: none; font-size: 0.9rem; }
+  #sectionNav a { color: #9aa0b4; text-decoration: none; font-size: 0.85rem; }
   #sectionNav a:hover { color: #e8eaf0; text-decoration: underline; }
   .cat > p.blurb { color: #9aa0b4; font-size: 0.9rem; margin-bottom: 16px; }
   .episode { background: #1e2230; border: 1px solid #2c3145; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
@@ -33,7 +32,7 @@
   .autoplay-bar label { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem; }
   .autoplay-bar input[type="checkbox"] { width: 20px; height: 20px; accent-color: #7c8aff; cursor: pointer; }
   .autoplay-bar .autoplay-note { color: #9aa0b4; font-size: 0.85rem; }
-  .autoplay-countdown { position: sticky; top: 108px; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #1e2230; border: 1px solid #7c8aff; border-radius: 10px; padding: 10px 14px; margin-bottom: 28px; font-size: 0.95rem; box-shadow: 0 4px 18px rgba(0,0,0,0.45); }
+  .autoplay-countdown { position: sticky; top: 102px; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #1e2230; border: 1px solid #7c8aff; border-radius: 10px; padding: 10px 14px; margin-bottom: 28px; font-size: 0.95rem; box-shadow: 0 4px 18px rgba(0,0,0,0.45); }
   .autoplay-countdown[hidden] { display: none; }
   .autoplay-countdown button { background: #2c3145; color: #c9cede; border: 1px solid #3a4060; border-radius: 8px; padding: 6px 12px; font-size: 0.85rem; cursor: pointer; flex-shrink: 0; }
   .autoplay-countdown button:hover { background: #3a4060; }
@@ -56,7 +55,6 @@
     <button type="button" id="autoplayCancel">Cancel</button>
   </div>
   <nav id="sectionNav" aria-label="Podcast sections">
-    <span class="nav-brand">Podcast Library</span>
     <span class="nav-links" id="navLinks"></span>
   </nav>
   <div id="cats"></div>
