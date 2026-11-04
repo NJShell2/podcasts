@@ -14,9 +14,9 @@
   .cat { margin-bottom: 40px; scroll-margin-top: 46px; }
   .cat > h2 { position: sticky; top: 44px; z-index: 15; background: #14161c; font-size: 1.4rem; padding: 8px 0 6px; margin-bottom: 2px; }
   #sectionNav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; height: 44px; background: #14161c; border-bottom: 1px solid #2c3145; padding: 0 2px; margin-bottom: 28px; }
-  #sectionNav .nav-links { display: flex; gap: 4px 12px; flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  #sectionNav .nav-links { display: flex; gap: 4px 10px; flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
   #sectionNav .nav-links::-webkit-scrollbar { display: none; }
-  #sectionNav a { color: #9aa0b4; text-decoration: none; font-size: 0.85rem; }
+  #sectionNav a { color: #9aa0b4; text-decoration: none; font-size: 0.82rem; }
   #sectionNav a:hover { color: #e8eaf0; text-decoration: underline; }
   .cat > p.blurb { color: #9aa0b4; font-size: 0.9rem; margin-bottom: 16px; }
   .episode { background: #1e2230; border: 1px solid #2c3145; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
@@ -264,10 +264,14 @@ function revealFromHash() {
   if (!target) {
     // Section link (for example #strategy-sessions): the sections are
     // rendered by this script, so a pasted link needs this nudge to land
-    // on the section after the page builds. scroll-margin-top keeps the
-    // section header clear of the sticky nav.
+    // on the section after the page builds. Scroll to the exact offset
+    // (44px nav bar + 2px) so the section heading sits flush under the
+    // bar and the previous section is fully scrolled away.
     var sec = document.getElementById(m[1]);
-    if (sec && sec.className === "cat") { sec.scrollIntoView({ block: "start" }); }
+    if (sec && sec.className === "cat") {
+      var y = sec.getBoundingClientRect().top + window.pageYOffset - 46;
+      window.scrollTo(0, y);
+    }
     return;
   }
   target.scrollIntoView({ block: "center" });
